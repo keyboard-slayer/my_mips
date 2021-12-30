@@ -18,16 +18,19 @@
 #include "debug.h"
 #include "loader.h"
 
-#include <elf.h>
 #include <assert.h>
+#include <elf.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <byteswap.h>
 
 void elf_load(MAYBE_UNUSED mips_t *mips, char const *filename)
 {
     long size;
+    uint32_t i;
     Elf32_Ehdr header = {0};
+    MAYBE_UNUSED Elf32_Phdr prog = {0};
     FILE *fp = fopen(filename, "r");
 
     if (fp == NULL)
@@ -81,5 +84,9 @@ void elf_load(MAYBE_UNUSED mips_t *mips, char const *filename)
         debug_log(LOG_ERROR, "Your binary is too big !");
         fclose(fp);
         exit(1);
+    }
+
+    for (i = 0; i < __bswap_16(header.e_phnum); i++)
+    {
     }
 }
